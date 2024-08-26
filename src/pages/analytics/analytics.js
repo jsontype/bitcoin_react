@@ -1,14 +1,40 @@
 // ***! mvpからのデータを用いて、グラフを実際のbitcoin価格で表示する
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 import Masonry from 'masonry-layout';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import Moment from 'moment';
 import { Card, CardBody } from '../../components/card/card.jsx';
 import 'bootstrap-daterangepicker/daterangepicker.css';
+import useCryptoPrices from '../../components/models/crypto/cryptoPrices.js';
 
 function Analytics() {
+	const [prices, setPrices] = useState({ bitcoin: null, ethereum: null });
+
+	const todayPrices = useCryptoPrices();
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      const apiUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd';
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        setPrices({
+          bitcoin: data.bitcoin.usd,
+          ethereum: data.ethereum.usd,
+        });
+      } catch (error) {
+        console.error('Error fetching prices:', error);
+      }
+    };
+  
+    fetchPrices();
+
+    const interval = setInterval(fetchPrices, 300000); // 5分毎にアップデート
+    return () => clearInterval(interval);
+  }, []);  
+
 	var chart1 = '';
 	var chart2 = '';
 	var chart3 = '';
@@ -85,7 +111,7 @@ function Analytics() {
 			chart1 = new Chart(document.getElementById('chart1').getContext('2d'), {
 				type: 'line',
 				data: {
-					labels: ['', '4am', '8am', '12pm', '4pm', '8pm', newDate(1)],
+					labels: ['12am', '', '4am', '', '8am', '', '12pm', '', '4pm', '', '8pm', '', newDate(1)],
 					datasets: [{
 						color: themeColor,
 						backgroundColor: 'transparent',
@@ -98,7 +124,9 @@ function Analytics() {
 						pointHoverBorderColor: themeColor,
 						pointHoverRadius: 6,
 						pointHoverBorderWidth: 2,
-						data: [0, 0, 0, 601.5, 220]
+						// ***! 2-1. 当日のBitcoinの価格を2時間毎に表示
+						// data: todayPrices
+						data: [0, 0, 0, 601.5, 220, 0, 0, 0, 0, 0, 0, 0, 0]
 					},{
 						color: gray300Color,
 						backgroundColor: 'rgba('+ gray300RgbColor + ', .2)',
@@ -111,7 +139,8 @@ function Analytics() {
 						pointHoverBorderColor: gray300Color,
 						pointHoverRadius: 6,
 						pointHoverBorderWidth: 2,
-						data: [0, 0, 0, 500, 120, 0, 0, 0]
+						// ***! 2-1. 前日のBitcoinの価格を2時間毎に表示
+						data: [100, 100, 100, 500, 120, 100, 100, 100, 100, 100, 100, 100, 100]
 					}]
 				}
 			});
@@ -285,7 +314,7 @@ function Analytics() {
 			});
 		}
 	}
-	
+
 	useEffect(() => {
 		renderChart();
 		new Masonry('[data-masonry]');
@@ -317,12 +346,13 @@ function Analytics() {
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fw-bold fs-16px">Total sales</div>
+								<div className="flex-fill fw-bold fs-16px">Bitcoin</div>
 								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
 							</div>
 			
 							<div className="d-flex align-items-center h4 mb-3">
-								<div>$821.50</div>
+								{/* ***! 1. pricesコンポーネントからBitcoinの現在の価格を表示 */}
+								<div>{prices.bitcoin ? `${prices.bitcoin} USD` : 'Loading...'}</div>
 								<small className="fw-400 ms-auto text-theme">+5%</small>
 							</div>
 						
