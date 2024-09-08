@@ -11,8 +11,10 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 function Analytics() {
 	const [prices, setPrices] = useState({ bitcoin: null, ethereum: null });
 	const [dailyHistory, setDailyHistory] = useState(null);
+	const [indexData, setIndexData] = useState(null);
 
   useEffect(() => {
+		// ビットコインの価格を取得する関数
     const fetchPrices = async () => {
       const apiUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd';
       try {
@@ -27,8 +29,7 @@ function Analytics() {
       }
     };
   
-    fetchPrices();
-
+		// ビットコインの本日の価格の履歴を取得する関数
 		const fetchDailyHistory = async (cryptoId, days) => {
 			const apiUrl = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=usd&days=${days}`;
 			try {
@@ -49,15 +50,25 @@ function Analytics() {
 			}
 		};
 
-		// ***! 1. history fetch -> history data (graph data)
+    const fetchFearIndex = async () => {
+      try {
+        const response = await fetch('https://api.alternative.me/fng/');
+        const data = await response.json();
+        if (data && data.data && data.data.length > 0) {
+          setIndexData(data.data[0]);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };		
+
+    fetchPrices();
 		fetchDailyHistory('bitcoin', 1);
+		fetchFearIndex();
   }, []);  
 
 	var chart1 = '';
 	var chart2 = '';
-	var chart3 = '';
-	var chart4 = '';
-	var chart5 = '';
 		
 	var dateRange = {
 		currentWeek: Moment().subtract(7, 'days').format('D MMM YYYY') + ' - ' + Moment().format('D MMM YYYY'),
@@ -89,7 +100,6 @@ function Analytics() {
 		// color & font variable
 		var gray300Color = (getComputedStyle(document.body).getPropertyValue('--bs-gray-300')).trim();
 		var gray300RgbColor = (getComputedStyle(document.body).getPropertyValue('--bs-gray-300-rgb')).trim();
-		var indigoColor = (getComputedStyle(document.body).getPropertyValue('--bs-indigo')).trim();
 		var bodyColor = (getComputedStyle(document.body).getPropertyValue('--bs-body-color')).trim();
 		var bodyBg = (getComputedStyle(document.body).getPropertyValue('--bs-body-bg')).trim();
 		var borderColor = (getComputedStyle(document.body).getPropertyValue('--bs-border-color')).trim();
@@ -254,132 +264,6 @@ function Analytics() {
 				}
 			});
 		}
-
-		// #chart3
-		var chart3Container = document.getElementById('chart-3');
-		if (chart3) {
-			chart3.destroy();
-		}
-		if (chart3Container) {
-			chart3Container.innerHTML = '<canvas id="chart3" className="w-100" height="190"></canvas>';
-			chart3 = new Chart(document.getElementById('chart3').getContext('2d'), {
-				type: 'line',
-				data: {
-					labels: ['', '4am', '8am', '12pm', '4pm', '8pm', newDate(1)],
-					datasets: [{
-						color: indigoColor,
-						backgroundColor: 'transparent',
-						borderColor: indigoColor,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: indigoColor,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						data: [0, 0, 5, 18, 9]
-					},{
-						color: themeColor,
-						backgroundColor: 'rgba('+ themeColor +', .2)',
-						borderColor: themeColor,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: themeColor,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						data: [0, 0, 10, 26, 13]
-					}]
-				}
-			});
-		}
-
-		// #chart4
-		var chart4Container = document.getElementById('chart-4');
-		if (chart4) {
-			chart4.destroy();
-		}
-		if (chart4Container) {
-			chart4Container.innerHTML = '<canvas id="chart4" className="w-100" height="190"></canvas>';
-			chart4 = new Chart(document.getElementById('chart4').getContext('2d'), {
-				type: 'line',
-				data: {
-					labels: ['', '4am', '8am', '12pm', '4pm', '8pm', newDate(1)],
-					datasets: [{
-						color: themeColor,
-						backgroundColor: 'transparent',
-						borderColor: themeColor,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: themeColor,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						data: [0, 0, 0, 24, 39]
-					},{
-						color: gray300Color,
-						backgroundColor: 'rgba('+ gray300RgbColor + ', .2)',
-						borderColor: gray300Color,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: gray300Color,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						data: [0, 0, 0, 28, 35, 23, 0, 0]
-					}]
-				}
-			});
-		}
-	
-		// #chart5
-		var chart5Container = document.getElementById('chart-5');
-		if (chart5) {
-			chart5.destroy();
-		}
-		if (chart5Container) {
-			chart5Container.innerHTML = '<canvas id="chart5" className="w-100" height="190"></canvas>';
-			chart5 = new Chart(document.getElementById('chart5').getContext('2d'), {
-				type: 'line',
-				data: {
-					labels: ['', '4am', '8am', '12pm', '4pm', '8pm', newDate(1)],
-					datasets: [{
-						color: themeColor,
-						backgroundColor: 'transparent',
-						borderColor: themeColor,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: themeColor,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						data: [0, 0, 0, 12, 5]
-					},{
-						color: gray300Color,
-						backgroundColor: 'rgba('+ gray300RgbColor + ', .2)',
-						borderColor: gray300Color,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: gray300Color,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						data: [0, 0, 0, 10, 4, 2, 0, 0]
-					}]
-				}
-			});
-		}
 	}
 
 	useEffect(() => {
@@ -481,38 +365,48 @@ function Analytics() {
 					</Card>
 				</div>
 			
+				{/* Fear Index */}
 				<div className="col-lg-12 col-xl-6 mb-4">
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-3">
-								<div className="flex-fill fw-bold fs-16px">Top product by units sold</div>
-							</div>
-			
+								<div className="flex-fill fw-bold fs-16px">Fear Index</div>
+								<a href="https://www.ubcindex.com/feargreed" target="_blank" className="text-decoration-none text-inverse text-opacity-50" rel="noreferrer">View report</a>
+							</div>			
 							<div>
 								<div className="row mb-2">
-									<div className="col-6">iPhone 11 Pro Max</div>
-									<div className="col-3 text-center">329</div>
-									<div className="col-3 text-center"><span className="text-theme">+</span> 25%</div>
+									<div className="col-6">{ indexData && new Date(indexData.timestamp * 1000).toLocaleDateString() }</div>
+									<div className="col-3 text-center">{indexData && indexData.value }</div>
+									<div className="col-3 text-center">
+										<span className={ 
+											indexData && indexData.value_classification === 'Fear' | 'Extreme Fear' 
+											? 'text-danger' 
+											: indexData && indexData.value_classification === 'Neutral' 
+											? 'text-warning' 
+											: 'text-theme'
+										}>
+											{ indexData && indexData.value_classification }
+										</span>
+									</div>
 								</div>
 								<div className="row mb-2">
-									<div className="col-6">iPad Pro</div>
-									<div className="col-3 text-center">219</div>
-									<div className="col-3 text-center"><span className="text-danger">-</span> 5.2%</div>
+									<span className={ 
+										indexData && indexData.value_classification === 'Fear' | 'Extreme Fear' 
+										? 'text-theme' 
+										: indexData && indexData.value_classification === 'Neutral' 
+										? 'text-warning' 
+										: 'text-danger'
+									}>
+										{/* ***! 3. */}
+										<div className="col-12">There is a possibility that the value will increase.</div>
+									</span>
 								</div>
 								<div className="row mb-2">
-									<div className="col-6">Macbook Pro</div>
-									<div className="col-3 text-center">125</div>
-									<div className="col-3 text-center"><span className="text-theme">+</span> 2.3%</div>
+										{/* ***! 3. */}
+										<div className="col-12">The index is gradually falling. As the volatility of prices increases, trading volume is rising. Short-term lows may form.</div>
 								</div>
 								<div className="row mb-2">
-									<div className="col-6">iPhone SE 2</div>
-									<div className="col-3 text-center">92</div>
-									<div className="col-3 text-center"><span className="text-theme">+</span> 4.9%</div>
-								</div>
-								<div className="row">
-									<div className="col-6">Apple pencil</div>
-									<div className="col-3 text-center">52</div>
-									<div className="col-3 text-center"><span className="text-theme">+</span> 25%</div>
+									<a href="https://www.ubcindex.com/feargreed" target="_blank" className="col-12" rel="noreferrer">Show Detail</a>
 								</div>
 							</div>
 						</CardBody>
