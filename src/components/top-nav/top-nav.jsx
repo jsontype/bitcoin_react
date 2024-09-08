@@ -185,7 +185,7 @@ function handleUnlimitedTopNavRender() {
 		handlePageLoadMenuFocus();
 		enableFluidContainerDrag('.app-top-nav');
 	}
-};
+}
 
 function handleTopNavToggle(menus, forMobile = false) {
 	menus.map(function(menu) {
@@ -209,7 +209,7 @@ function handleTopNavToggle(menus, forMobile = false) {
 		}
 		return true;
 	});
-};
+}
 
 function handleTopNavSubMenu() {
 	var menuBaseSelector = '.app-top-nav .menu > .menu-item.has-sub';
@@ -229,7 +229,7 @@ function handleTopNavSubMenu() {
 	var submenuLvl2Selector = menuBaseSelector + submenuBaseSelector + submenuBaseSelector;
 	var submenusLvl2 = [].slice.call(document.querySelectorAll(submenuLvl2Selector + ' > .menu-link'));
 	handleTopNavToggle(submenusLvl2);
-};
+}
 
 function TopNav() {
 	useEffect(() => {

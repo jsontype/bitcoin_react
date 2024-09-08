@@ -28,6 +28,7 @@
     "react/no-unescaped-entities": "off", // JSX 내에서 특수문자를 사용할 수 있는지 여부 옵션
     "react/prop-types": "off", // prop-types 사용 여부 옵션
     "no-unused-vars": "off", // 사용하지 않는 변수 경고 여부 옵션
-    "no-undef": "off" // 선언되지 않은 변수 사용 여부 옵션
+    "no-undef": "off", // 선언되지 않은 변수 사용 여부 옵션
+    "no-mixed-spaces-and-tabs": "off" // 공백과 탭 혼용 여부 옵션
   }
 }

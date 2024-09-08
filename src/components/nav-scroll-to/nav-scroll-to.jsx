@@ -31,6 +31,6 @@ function NavScrollTo(props) {
 			{ props.children }
 		</nav>
 	);
-};
+}
 
 export { NavScrollTo };

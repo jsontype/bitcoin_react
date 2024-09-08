@@ -14,7 +14,7 @@ function Card(props) {
 			</div>
 		</div>
 	);
-};
+}
 
 function CardHeader(props) {
 	return (
@@ -30,7 +30,7 @@ function CardBody(props) {
 			{ props.children }
 		</div>
 	);
-};
+}
 
 function CardImgOverlay(props) {
 	return (
@@ -38,7 +38,7 @@ function CardImgOverlay(props) {
 			{ props.children }
 		</div>
 	);
-};
+}
 
 function CardFooter(props) {
 	return (
@@ -46,7 +46,7 @@ function CardFooter(props) {
 			{ props.children }
 		</div>
 	);
-};
+}
 
 function CardGroup(props) {
 	return (
@@ -54,7 +54,7 @@ function CardGroup(props) {
 			{ props.children }
 		</div>
 	);
-};
+}
 
 
 function CardExpandToggler(props) {

@@ -148,6 +148,6 @@ function ThemePanel() {
 			</div>
 		</div>
 	);
-};
+}
 
 export default ThemePanel;
