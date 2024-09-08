@@ -140,12 +140,13 @@ function Analytics() {
 			const bitcoinPricesFromHistory = dailyHistory.map(([_, bitcoinPrice]) => bitcoinPrice);
 	
 			// 최소값과 최대값을 history에서 계산하고, +-1000의 여유를 줌
-			const minPrice = Math.min(...bitcoinPricesFromHistory) - 1000;
-			const maxPrice = Math.max(...bitcoinPricesFromHistory) + 1000;
+			const minPrice = Math.min(...bitcoinPricesFromHistory) - 2000;
+			const maxPrice = Math.max(...bitcoinPricesFromHistory) + 2000;
 	
 			// Bitcoin 가격 데이터를 저장할 배열
 			const bitcoinPrices = new Array(labels.length).fill(0); // 처음엔 0으로 채워놓습니다.
-			
+			const bitcoinPricesWithCommission = new Array(labels.length).fill(0); // 처음엔 0으로 채워놓습니다.
+
 			// history 배열을 탐색하여 labels에 맞는 시간을 찾아 bitcoinPrices에 업데이트
 			dailyHistory.forEach(([unixTime, bitcoinPrice]) => {
 					const timeString = new Date(unixTime).toLocaleTimeString('en-US', {
@@ -157,6 +158,7 @@ function Analytics() {
 					const labelIndex = labels.indexOf(timeString);
 					if (labelIndex !== -1) {
 							bitcoinPrices[labelIndex] = bitcoinPrice; // 해당 시간의 비트코인 가격을 업데이트
+							bitcoinPricesWithCommission[labelIndex] = bitcoinPrice * 1.02; // 해당 시간의 비트코인 가격을 업데이트
 					}
 			});
 	
@@ -191,7 +193,7 @@ function Analytics() {
 									pointHoverBorderColor: gray300Color,
 									pointHoverRadius: 6,
 									pointHoverBorderWidth: 2,
-									data: [100, 100, 100, 500, 120, 100]
+									data: bitcoinPricesWithCommission
 							}]
 					},
 					options: {
@@ -406,13 +408,14 @@ function Analytics() {
 				<div>compared to <span>{dateRange.prevWeek}</span></div>
 			</div>
 	
+			{/* Bitcoin Daily Prices */}
 			<div className="row" data-masonry='{"percentPosition": true }'>
-				<div className="col-lg-6 col-xl-4 mb-4">
+				<div className="col-lg-12 col-xl-6 mb-4">
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-2">
 								<div className="flex-fill fw-bold fs-16px">Bitcoin Daily Prices</div>
-								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
+								<a href="https://www.investtech.com/main/market.php?CompanyID=99400001&product=241" target="_blank" className="text-decoration-none text-inverse text-opacity-50" rel="noreferrer">View report</a>
 							</div>
 			
 							<div className="d-flex align-items-center h4 mb-3">
@@ -422,22 +425,22 @@ function Analytics() {
 							</div>
 						
 							<div>
-								<div className="fs-12px fw-bold mb-2 text-inverse text-opacity-50">SALES OVER TIME</div>
+								<div className="fs-12px fw-bold mb-2 text-inverse text-opacity-50">Daily Prices</div>
 								<div className="chart mb-2" style={{height: '190px'}}>
 									<div id="chart-1"></div>
 								</div>
 								<div className="d-flex align-items-center justify-content-center fw-bold text-inverse text-opacity-50">
 									<i className="fa fa-square text-gray-300 me-2"></i> 
-									<span className="fs-12px me-4">{prevDate}</span>
+									<span className="fs-12px me-4">With 2% Commission</span>
 									<i className="fa fa-square text-theme me-2"></i> 
-									<span className="fs-12px me-4">{todayDate}</span>
+									<span className="fs-12px me-4">Currunt Prices</span>
 								</div>
 							</div>
 						</CardBody>
 					</Card>
 				</div>
 			
-				<div className="col-lg-6 col-xl-4 mb-4">
+				<div className="col-lg-12 col-xl-6 mb-4">
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-2">
@@ -478,7 +481,7 @@ function Analytics() {
 					</Card>
 				</div>
 			
-				<div className="col-lg-6 col-xl-4 mb-4">
+				<div className="col-lg-12 col-xl-6 mb-4">
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-3">
@@ -516,7 +519,7 @@ function Analytics() {
 					</Card>
 				</div>
 			
-				<div className="col-lg-6 col-xl-4 mb-4">
+				<div className="col-lg-12 col-xl-6 mb-4">
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-3">
