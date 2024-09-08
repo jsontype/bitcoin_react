@@ -7,12 +7,10 @@ import DateRangePicker from 'react-bootstrap-daterangepicker';
 import Moment from 'moment';
 import { Card, CardBody } from '../../components/card/card.jsx';
 import 'bootstrap-daterangepicker/daterangepicker.css';
-import useCryptoPrices from '../../components/models/crypto/cryptoPrices.js';
 
 function Analytics() {
 	const [prices, setPrices] = useState({ bitcoin: null, ethereum: null });
-
-	const todayPrices = useCryptoPrices();
+	const [history, setHistory] = useState(null);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -31,8 +29,28 @@ function Analytics() {
   
     fetchPrices();
 
-    const interval = setInterval(fetchPrices, 300000); // 5分毎にアップデート
-    return () => clearInterval(interval);
+		const fetchHistory = async (cryptoId, days) => {
+			const apiUrl = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=usd&days=${days}`;
+			try {
+				const response = await fetch(apiUrl);
+				if (!response.ok) {
+					throw new Error('CORS error or request blocked');
+				}
+				const data = await response.json();
+	
+				if (data.prices && data.prices.length > 0) {
+					setHistory(data.prices);
+				} else {
+					alert(`No data available for ${cryptoId} for the selected period.`);
+				}
+			} catch (error) {
+				console.error('Error fetching history:', error);
+				alert('Please wait. The request is blocked or there is an issue with the server.');
+			}
+		};
+
+		// ***! 1. history fetch -> history data (graph data)
+		fetchHistory('bitcoin', 1);
   }, []);  
 
 	var chart1 = '';
@@ -106,43 +124,71 @@ function Analytics() {
 		if (chart1) {
 			chart1.destroy();
 		}
+
+		// ***! 1.
+		// console.log('prices:', prices.bitcoin);
+		// console.log('history datetime:', new Date(history[0][0]).toLocaleTimeString('en-US', {
+		// 	hour: 'numeric',
+		// 	hour12: true
+		// }).toString().replace(/\s?(AM|PM)/i, (match) => match.toLowerCase()).replace(/\s/g, '').replace(/:00/, ''));
+		// console.log('history usd bitcoin price:', history[0][1]);
+
+		const labels = ['12am', '4am', '8am', '12pm', '4pm', '8pm']
+
 		if (chart1Container) {
+			// Bitcoin 가격 데이터를 저장할 배열
+			const bitcoinPrices = new Array(labels.length).fill(0); // 처음엔 0으로 채워놓습니다.
+			
+			// history 배열을 탐색하여 labels에 맞는 시간을 찾아 bitcoinPrices에 업데이트
+			history.forEach(([unixTime, bitcoinPrice]) => {
+					const timeString = new Date(unixTime).toLocaleTimeString('en-US', {
+							hour: 'numeric',
+							hour12: true
+					}).toString().replace(/\s?(AM|PM)/i, (match) => match.toLowerCase()).replace(/\s/g, '').replace(/:00/, '');
+	
+					// labels 배열과 시간 문자열을 비교하여 일치하는 인덱스를 찾음
+					const labelIndex = labels.indexOf(timeString);
+					if (labelIndex !== -1) {
+							bitcoinPrices[labelIndex] = bitcoinPrice; // 해당 시간의 비트코인 가격을 업데이트
+					}
+			});
+	
+			// 차트를 렌더링
 			chart1Container.innerHTML = '<canvas id="chart1" className="w-100" height="190"></canvas>';
 			chart1 = new Chart(document.getElementById('chart1').getContext('2d'), {
-				type: 'line',
-				data: {
-					labels: ['12am', '', '4am', '', '8am', '', '12pm', '', '4pm', '', '8pm', '', newDate(1)],
-					datasets: [{
-						color: themeColor,
-						backgroundColor: 'transparent',
-						borderColor: themeColor,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: themeColor,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						// ***! 2-1. 当日のBitcoinの価格を2時間毎に表示
-						// data: todayPrices
-						data: [0, 0, 0, 601.5, 220, 0, 0, 0, 0, 0, 0, 0, 0]
-					},{
-						color: gray300Color,
-						backgroundColor: 'rgba('+ gray300RgbColor + ', .2)',
-						borderColor: gray300Color,
-						borderWidth: 2,
-						pointBackgroundColor: bodyBg,
-						pointBorderWidth: 2,
-						pointRadius: 4,
-						pointHoverBackgroundColor: bodyBg,
-						pointHoverBorderColor: gray300Color,
-						pointHoverRadius: 6,
-						pointHoverBorderWidth: 2,
-						// ***! 2-1. 前日のBitcoinの価格を2時間毎に表示
-						data: [100, 100, 100, 500, 120, 100, 100, 100, 100, 100, 100, 100, 100]
-					}]
-				}
+					type: 'line',
+					data: {
+							labels,
+							datasets: [{
+									color: themeColor,
+									backgroundColor: 'transparent',
+									borderColor: themeColor,
+									borderWidth: 2,
+									pointBackgroundColor: bodyBg,
+									pointBorderWidth: 2,
+									pointRadius: 4,
+									pointHoverBackgroundColor: bodyBg,
+									pointHoverBorderColor: themeColor,
+									pointHoverRadius: 6,
+									pointHoverBorderWidth: 2,
+									// todayPrices에 해당하는 부분을 업데이트된 bitcoinPrices로 대체
+									data: bitcoinPrices
+							},{
+									color: gray300Color,
+									backgroundColor: 'rgba('+ gray300RgbColor + ', .2)',
+									borderColor: gray300Color,
+									borderWidth: 2,
+									pointBackgroundColor: bodyBg,
+									pointBorderWidth: 2,
+									pointRadius: 4,
+									pointHoverBackgroundColor: bodyBg,
+									pointHoverBorderColor: gray300Color,
+									pointHoverRadius: 6,
+									pointHoverBorderWidth: 2,
+									// 기존 데이터는 그대로 유지
+									data: [100, 100, 100, 500, 120, 100]
+							}]
+					}
 			});
 		}
 		
