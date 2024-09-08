@@ -14,7 +14,7 @@
       <div className="widget-reminder-divider bg-primary"></div>
       <div className="widget-reminder-content">
         <div className="fw-bold">Dinner with Richard</div>
-        <div className="fs-13px"> - Tom's Too Restaurant</div>
+        <div className="fs-13px"> - Tom&apos;s Too Restaurant</div>
         <div className="d-flex align-items-center fs-13px mt-2">
           <div className="flex-fill d-flex align-items-center">
             <img src="/assets/img/user/user-3.jpg" alt="" width="16" className="rounded-circle me-2" /> Richard Leong

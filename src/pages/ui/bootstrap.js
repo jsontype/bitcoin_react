@@ -61,7 +61,7 @@ function UiBootstrap() {
 											<strong>Primary!</strong> A simple primary alert check it out! 
 										</div>
 										<div className="alert alert-secondary">
-											<strong>Secondary Alert!</strong> This alert is not important, but it's beautiful.
+											<strong>Secondary Alert!</strong> This alert is not important, but It&apos;s beautiful.
 										</div>
 										<div className="alert alert-success">
 											<strong>Well done!</strong> You successfully read this important alert message. 
@@ -73,7 +73,7 @@ function UiBootstrap() {
 											<strong>Warning!</strong> Better check yourself, you're not looking too good.
 										</div>
 										<div className="alert alert-info">
-											<strong>Heads up!</strong> This alert needs your attention, but it's not super important.
+											<strong>Heads up!</strong> This alert needs your attention, but It&apos;s not super important.
 										</div>
 										<div className="alert alert-dark">
 											<strong>Dark!</strong>  A simple dark alert—check it out!

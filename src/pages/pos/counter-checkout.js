@@ -12,7 +12,7 @@ function PosCounterCheckout() {
 	const [selectedTable, setSelectedTable] = useState();
 	
 	function checkTime(i) {
-		if (i < 10) {i = "0" + i};
+		if (i < 10) {i = "0" + i}
 		return i;
 	}
 	

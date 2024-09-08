@@ -13,7 +13,7 @@ function PagesProductDetails() {
 	
 	function setValue(value) { 
 	
-	};
+	}
 	
 	return (
 		<div>
@@ -229,7 +229,7 @@ function PagesProductDetails() {
 						</CardHeader>
 						<CardBody>
 							<div className="mb-3">
-								<label className="form-label">What's in the box</label>
+								<label className="form-label">What&apos;s in the box</label>
 								<input type="text" className="form-control" placeholder="e.g T-shirt" name="package_content" />
 							</div>
 							<div className="row">
@@ -427,7 +427,7 @@ function PagesProductDetails() {
 								<input type="text" className="form-control ps-30px" placeholder="Search for collections" />
 							</div>
 							<p className="mb-0 small text-inverse text-opacity-50">
-								<i className="fa fa-question-circle fa-fw"></i> Add this product to a collection so it's easy to find in your store.
+								<i className="fa fa-question-circle fa-fw"></i> Add this product to a collection so It&apos;s easy to find in your store.
 							</p>
 						</CardBody>
 					</Card>

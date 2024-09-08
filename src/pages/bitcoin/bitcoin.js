@@ -1,5 +1,3 @@
-// ***! mvpからのデータを用いて、グラフを実際のbitcoin価格で表示する
-
 import React, { useEffect, useState } from 'react';
 import Chart from 'chart.js/auto';
 import Masonry from 'masonry-layout';
@@ -8,12 +6,94 @@ import Moment from 'moment';
 import { Card, CardBody } from '../../components/card/card.jsx';
 import 'bootstrap-daterangepicker/daterangepicker.css';
 
-function Analytics() {
+function Bitcoin() {
 	const [prices, setPrices] = useState({ bitcoin: null, ethereum: null });
 	const [dailyHistory, setDailyHistory] = useState(null);
 	const [indexData, setIndexData] = useState(null);
+	const [movingAverage, setMovingAverage] = useState(0);
+  const [dayBeforeYesterdayMaxPrice, setDayBeforeYesterdayMaxPrice] = useState(0);
+  const [yesterdayMaxPrice, setYesterdayMaxPrice] = useState(0);
+  const [todayMaxPrice, setTodayMaxPrice] = useState(0);
+	const [averageAnalysisText, setAverageAnalysisText] = useState('');
+	const [averageAnalysis, setAverageAnalysis] = useState('');
 
   useEffect(() => {
+		// Bitcoin 120 Days Average Price Data Analysis
+		const fetchPriceAnalysis = async () => {
+      try {
+        // Fetch 120-day data for moving average
+        const movingAverageResponse = await fetch('https://api.coingecko.com/api/v3/coins/bitcoin/market_chart?vs_currency=usd&days=120');
+        const movingAverageData = await movingAverageResponse.json();
+        if (movingAverageData && movingAverageData.prices) {
+          const prices = movingAverageData.prices.map(price => price[1]); // Extract only the price values
+          const average = calculateMovingAverage(prices, 120);
+          setMovingAverage(average);
+        }
+
+        // Fetch data for the last 3 days for daily max prices
+        const today = new Date();
+        const threeDaysAgo = new Date(today);
+        threeDaysAgo.setDate(today.getDate() - 3);
+
+        const fromTimestamp = Math.floor(threeDaysAgo.getTime() / 1000);
+        const toTimestamp = Math.floor(today.getTime() / 1000);
+
+        const dailyMaxResponse = await fetch(
+          `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart/range?vs_currency=usd&from=${fromTimestamp}&to=${toTimestamp}`
+        );
+        const dailyMaxData = await dailyMaxResponse.json();
+        if (dailyMaxData && dailyMaxData.prices) {
+          const dayBeforeYesterdayPrices = [];
+          const yesterdayPrices = [];
+          const todayPrices = [];
+          const dayBeforeYesterdayDate = new Date();
+          dayBeforeYesterdayDate.setDate(today.getDate() - 2);
+          const yesterdayDate = new Date();
+          yesterdayDate.setDate(today.getDate() - 1);
+
+          dailyMaxData.prices.forEach(([timestamp, price]) => {
+            const date = new Date(timestamp);
+            if (date.getDate() === dayBeforeYesterdayDate.getDate()) {
+              dayBeforeYesterdayPrices.push(price);
+            } else if (date.getDate() === yesterdayDate.getDate()) {
+              yesterdayPrices.push(price);
+            } else if (date.getDate() === today.getDate()) {
+              todayPrices.push(price);
+            }
+          });
+
+          const highestDayBeforeYesterdayPrice = Math.max(...dayBeforeYesterdayPrices);
+          const highestYesterdayPrice = Math.max(...yesterdayPrices);
+          const highestTodayPrice = Math.max(...todayPrices);
+
+          setDayBeforeYesterdayMaxPrice(highestDayBeforeYesterdayPrice);
+          setYesterdayMaxPrice(highestYesterdayPrice);
+          setTodayMaxPrice(highestTodayPrice);
+
+          // Determine analysis based on price comparisons
+          const prices = [highestDayBeforeYesterdayPrice, highestYesterdayPrice, highestTodayPrice];
+          const above1000 = prices.some(price => price > movingAverage + 1000);
+          const aboveAverage = prices.some(price => price > movingAverage);
+
+					const average = getAveragePriceSummary("high");
+					console.log('average:', average);
+
+          if (above1000) {
+            setAverageAnalysisText(getAveragePriceSummary("high"));
+						setAverageAnalysis('high');
+          } else if (aboveAverage) {
+            setAverageAnalysisText(getAveragePriceSummary("neutral"));
+						setAverageAnalysis('neutral');
+          } else {
+            setAverageAnalysisText(getAveragePriceSummary("low"));
+						setAverageAnalysis('low');
+          }
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
 		// ビットコインの価格を取得する関数
     const fetchPrices = async () => {
       const apiUrl = 'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd';
@@ -60,33 +140,73 @@ function Analytics() {
       } catch (error) {
         console.error(error);
       }
-    };		
+    };
 
-    fetchPrices();
-		fetchDailyHistory('bitcoin', 1);
-		fetchFearIndex();
-  }, []);  
+		const calculateMovingAverage = (prices, days) => {
+			if (prices.length < days) return null;
+			const sum = prices.slice(-days).reduce((acc, price) => acc + price, 0);
+			return sum / days;
+		};
 
-	var chart1 = '';
-	var chart2 = '';
+		fetchPriceAnalysis().then(() => {
+			fetchPrices();
+			fetchDailyHistory('bitcoin', 1);
+			fetchFearIndex();
+		})
+  }, [movingAverage]);  
+
+	let chart1 = '';
+	let chart2 = '';
 		
-	var dateRange = {
+	let dateRange = {
 		currentWeek: Moment().subtract(7, 'days').format('D MMM YYYY') + ' - ' + Moment().format('D MMM YYYY'),
 		prevWeek: Moment().subtract(15, 'days').format('D MMM') + ' - ' + Moment().subtract(8, 'days').format('D MMM YYYY')
 	};
 	
-	var startDate = '';
-	var endDate = '';
-	var prevDate = Moment().add(-1, 'd').format('D MMM YYYY');
-	var todayDate = Moment().add(-1, 'd').format('D MMM YYYY');
-		
+	let startDate = '';
+	let endDate = '';
+	let prevDate = Moment().add(-1, 'd').format('D MMM YYYY');
+	let todayDate = Moment().add(-1, 'd').format('D MMM YYYY');
+
+	const getFearSummary = (value_classification) => {
+		const result = {
+			"Extreme Fear": "The price will rise.",
+			"Fear": "The price can rise.",
+			"Neutral": "We can't judge the fluctuation of price for a while.",
+			"Greed": "The prices can fall.",
+			"Extreme Greed": "The prices will fall."
+		}[value_classification] || '';  
+		return result;
+	}
+
+	const getFearDescription = (value_classification) => {
+		const result = {
+			"Extreme Fear": "Market is falling with high volatility and high trading volume. Panic-selling continues.",
+			"Fear": "Market goes down gradually. As volatility increases, trading volume is increasing.",
+			"Neutral": "Currently, the market is receiving psychological resistance and support from participants.",
+			"Greed": "Market goes up gradually. Volatility and trading volume are also increasing.",
+			"Extreme Greed": "Market rises with high trading volume and strong volatility. Be aware of the strong volatility."
+		}[value_classification] || '';  
+		return result;
+	}
+
+	// ***! 4. getPriceSummary関数を作成
+	const getAveragePriceSummary = (value_classification) => {
+		const result = {
+			"low": "It can be less valuable.",
+			"neutral": "We can't judge the fluctuation of value for a while.",
+			"high": "It can be more valuable.",
+		}[value_classification] || '';  
+		return result;
+	}	
+
 	function handleDateApplyEvent(event, picker) {
-		var startDate = picker.startDate;
-		var endDate = picker.endDate;
-		var gap = endDate.diff(startDate, 'days');
+		let startDate = picker.startDate;
+		let endDate = picker.endDate;
+		let gap = endDate.diff(startDate, 'days');
 		
-		var currentWeek = startDate.format('D MMM YYYY') + ' - ' + endDate.format('D MMM YYYY');
-		var prevWeek = Moment(startDate).subtract(gap, 'days').format('D MMM') + ' - ' + Moment(startDate).subtract(1, 'days').format('D MMM YYYY');
+		let currentWeek = startDate.format('D MMM YYYY') + ' - ' + endDate.format('D MMM YYYY');
+		let prevWeek = Moment(startDate).subtract(gap, 'days').format('D MMM') + ' - ' + Moment(startDate).subtract(1, 'days').format('D MMM YYYY');
 		
 		dateRange.currentWeek = currentWeek;
 		dateRange.prevWeek = prevWeek;
@@ -98,15 +218,15 @@ function Analytics() {
 		}
 		
 		// color & font variable
-		var gray300Color = (getComputedStyle(document.body).getPropertyValue('--bs-gray-300')).trim();
-		var gray300RgbColor = (getComputedStyle(document.body).getPropertyValue('--bs-gray-300-rgb')).trim();
-		var bodyColor = (getComputedStyle(document.body).getPropertyValue('--bs-body-color')).trim();
-		var bodyBg = (getComputedStyle(document.body).getPropertyValue('--bs-body-bg')).trim();
-		var borderColor = (getComputedStyle(document.body).getPropertyValue('--bs-border-color')).trim();
-		var bodyFontFamily = (getComputedStyle(document.body).getPropertyValue('--bs-body-font-family')).trim();
-		var bodyFontWeight = (getComputedStyle(document.body).getPropertyValue('--bs-body-font-weight')).trim();
-		var inverse = (getComputedStyle(document.body).getPropertyValue('--bs-dark')).trim();
-		var themeColor = (getComputedStyle(document.body).getPropertyValue('--bs-theme')).trim();
+		let gray300Color = (getComputedStyle(document.body).getPropertyValue('--bs-gray-300')).trim();
+		let gray300RgbColor = (getComputedStyle(document.body).getPropertyValue('--bs-gray-300-rgb')).trim();
+		let bodyColor = (getComputedStyle(document.body).getPropertyValue('--bs-body-color')).trim();
+		let bodyBg = (getComputedStyle(document.body).getPropertyValue('--bs-body-bg')).trim();
+		let borderColor = (getComputedStyle(document.body).getPropertyValue('--bs-border-color')).trim();
+		let bodyFontFamily = (getComputedStyle(document.body).getPropertyValue('--bs-body-font-family')).trim();
+		let bodyFontWeight = (getComputedStyle(document.body).getPropertyValue('--bs-body-font-weight')).trim();
+		let inverse = (getComputedStyle(document.body).getPropertyValue('--bs-dark')).trim();
+		let themeColor = (getComputedStyle(document.body).getPropertyValue('--bs-theme')).trim();
 		
 		// chart global options
 		Chart.defaults.font.family = bodyFontFamily;
@@ -130,7 +250,7 @@ function Analytics() {
 		Chart.defaults.maintainAspectRatio = false;
 		
 		// chart 1
-		var chart1Container = document.getElementById('chart-1');
+		let chart1Container = document.getElementById('chart-1');
 		if (chart1) {
 			chart1.destroy();
 		}
@@ -224,7 +344,7 @@ function Analytics() {
 		}
 	
 		// #chart2
-		var chart2Container = document.getElementById('chart-2');
+		let chart2Container = document.getElementById('chart-2');
 		if (chart2) {
 			chart2.destroy();
 		}
@@ -278,7 +398,7 @@ function Analytics() {
 	return (
 		<div>
 			<h1 className="page-header">
-				Analytics <small>stats, overview & performance</small>
+				Bitcoin <small>stats, overview & performance</small>
 			</h1>
 			
 			<div className="d-sm-flex align-items-center mb-3">
@@ -364,6 +484,89 @@ function Analytics() {
 						</CardBody>
 					</Card>
 				</div>
+
+				{/* 120 Days Average */}
+				<div className="col-lg-12 col-xl-6 mb-4">
+					<Card>
+						<CardBody>
+							<div className="d-flex align-items-center mb-3">
+								<div className="flex-fill fw-bold fs-16px">120 Days Average</div>
+							</div>
+			
+							{/* ***! 4. */}
+							<div className="row mb-2">
+								<span className={ 
+										averageAnalysis === 'high' 
+										? 'text-theme' 
+										: averageAnalysis === 'neutral' 
+										? 'text-warning' 
+										: 'text-danger'
+								}>								
+									<div className="col-12">{ averageAnalysisText }</div>
+								</span>
+							</div>
+
+							<div className="row mb-2">
+								<div className="col-6">
+									<div>
+										<a href="#/" className="text-decoration-none text-inverse text-opacity-50">
+											Bitcoin
+										</a>
+									</div>
+								</div>
+							</div>
+
+							<div className="row mb-2">
+								<div className="col-6">
+									<div>
+										<a href="#/" className="text-decoration-none text-inverse text-opacity-50">
+											120 Days Average
+										</a>
+									</div>
+								</div>
+								<div className="col-3 text-end"><span className="text-theme">$</span> </div>
+								<div className="col-3 text-start">{ movingAverage.toFixed(2).toString() }</div>
+							</div>
+
+							<div className="row mb-2">
+								<div className="col-6">
+									<div>
+										<a href="#/" className="text-decoration-none text-inverse text-opacity-50">
+											The Day Before Yesterday's High
+										</a>
+									</div>
+								</div>
+								<div className="col-3 text-end"><span className="text-theme">$</span> </div>
+								<div className="col-3 text-start">{ dayBeforeYesterdayMaxPrice.toFixed(2).toString() }</div>
+							</div>
+						
+							<div className="row mb-2">
+								<div className="col-6">
+									<div>
+										<a href="#/" className="text-decoration-none text-inverse text-opacity-50">
+											Yesterday's High
+										</a>
+									</div>
+								</div>
+								<div className="col-3 text-end"><span className="text-theme">$</span> </div>
+								<div className="col-3 text-start">{ yesterdayMaxPrice.toFixed(2).toString() }</div>
+							</div>
+
+							<div className="row">
+								<div className="col-6">
+									<div>
+										<a href="#/" className="text-decoration-none text-inverse text-opacity-50">
+											Today's High
+										</a>
+									</div>
+								</div>
+								<div className="col-3 text-end"><span className="text-theme">$</span> </div>
+								<div className="col-3 text-start">{ todayMaxPrice.toFixed(2).toString() }</div>
+							</div>							
+
+						</CardBody>
+					</Card>
+				</div>				
 			
 				{/* Fear Index */}
 				<div className="col-lg-12 col-xl-6 mb-4">
@@ -375,8 +578,23 @@ function Analytics() {
 							</div>			
 							<div>
 								<div className="row mb-2">
+									<span className={ 
+										indexData && indexData.value_classification === 'Fear' | 'Extreme Fear' 
+										? 'text-theme' 
+										: indexData && indexData.value_classification === 'Neutral' 
+										? 'text-warning' 
+										: 'text-danger'
+									}>
+										<div className="col-12">{ indexData && getFearSummary(indexData.value_classification) }</div>
+									</span>
+								</div>
+								<div className="row mb-2">
+										<div className="col-12">{ indexData && getFearDescription(indexData.value_classification) }</div>
+								</div>
+
+								<div className="row mb-2">
 									<div className="col-6">{ indexData && new Date(indexData.timestamp * 1000).toLocaleDateString() }</div>
-									<div className="col-3 text-center">{indexData && indexData.value }</div>
+									<div className="col-3 text-center">{indexData && indexData.value }</div>									
 									<div className="col-3 text-center">
 										<span className={ 
 											indexData && indexData.value_classification === 'Fear' | 'Extreme Fear' 
@@ -389,51 +607,6 @@ function Analytics() {
 										</span>
 									</div>
 								</div>
-								<div className="row mb-2">
-									<span className={ 
-										indexData && indexData.value_classification === 'Fear' | 'Extreme Fear' 
-										? 'text-theme' 
-										: indexData && indexData.value_classification === 'Neutral' 
-										? 'text-warning' 
-										: 'text-danger'
-									}>
-										{/* ***! 3. */}
-										<div className="col-12">There is a possibility that the value will increase.</div>
-									</span>
-								</div>
-								<div className="row mb-2">
-										{/* ***! 3. */}
-										<div className="col-12">The index is gradually falling. As the volatility of prices increases, trading volume is rising. Short-term lows may form.</div>
-								</div>
-								<div className="row mb-2">
-									<a href="https://www.ubcindex.com/feargreed" target="_blank" className="col-12" rel="noreferrer">Show Detail</a>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			
-				<div className="col-lg-12 col-xl-6 mb-4">
-					<Card>
-						<CardBody>
-							<div className="d-flex align-items-center mb-3">
-								<div className="flex-fill fw-bold fs-16px">Top pages by sessions</div>
-							</div>
-			
-							<div className="row mb-2">
-								<div className="col-6"><div><a href="#/" className="text-decoration-none text-inverse text-opacity-50">/phone/apple-11-pro-max</a></div></div>
-								<div className="col-3 text-center">15</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 15%</div>
-							</div>
-							<div className="row mb-2">
-								<div className="col-6"><div><a href="#/" className="text-decoration-none text-inverse text-opacity-50">/tablet/apple-ipad-pro-128gb</a></div></div>
-								<div className="col-3 text-center">12</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 8%</div>
-							</div>
-							<div className="row">
-								<div className="col-6"><div><a href="#/" className="text-decoration-none text-inverse text-opacity-50">/desktop/apple-mac-pro</a></div></div>
-								<div className="col-3 text-center">4</div>
-								<div className="col-3 text-center"><span className="text-danger">-</span> 3%</div>
 							</div>
 						</CardBody>
 					</Card>
@@ -444,4 +617,4 @@ function Analytics() {
 	)
 }
 
-export default Analytics;
+export default Bitcoin;

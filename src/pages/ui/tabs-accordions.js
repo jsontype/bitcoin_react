@@ -59,7 +59,7 @@ function UiTabsAccordions() {
 										<div className="tab-content pt-3">
 											<div className="tab-pane fade show active" id="home">
 												<p>
-													Raw denim you probably haven't heard of them jean shorts Austin. 
+													Raw denim you probably haven&apos;t heard of them jean shorts Austin. 
 													Nesciunt tofu stumptown aliqua, retro synth master cleanse. 
 													Mustache cliche tempor, williamsburg carles vegan helvetica. 
 													Reprehenderit butcher retro keffiyeh dreamcatcher synth. 
@@ -70,7 +70,7 @@ function UiTabsAccordions() {
 											</div>
 											<div className="tab-pane fade" id="profile">
 												<p>
-													Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. 
+													Food truck fixie locavore, accusamus mcsweeney&apos;s marfa nulla single-origin coffee squid. 
 													Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan 
 													four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft 
 													beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda 
@@ -87,7 +87,7 @@ function UiTabsAccordions() {
 													craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth 
 													PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever 
 													gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you 
-													probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu 
+													probably haven&apos;t heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu 
 													synth chambray yr.
 												</p>
 											</div>
@@ -132,7 +132,7 @@ function UiTabsAccordions() {
 										<div className="tab-content pt-3">
 											<div className="tab-pane fade show active" id="homev2">
 												<p>
-													Raw denim you probably haven't heard of them jean shorts Austin. 
+													Raw denim you probably haven&apos;t heard of them jean shorts Austin. 
 													Nesciunt tofu stumptown aliqua, retro synth master cleanse. 
 													Mustache cliche tempor, williamsburg carles vegan helvetica. 
 													Reprehenderit butcher retro keffiyeh dreamcatcher synth. 
@@ -143,7 +143,7 @@ function UiTabsAccordions() {
 											</div>
 											<div className="tab-pane fade" id="profilev2">
 												<p>
-													Food truck fixie locavore, accusamus mcsweeney's marfa nulla single-origin coffee squid. 
+													Food truck fixie locavore, accusamus mcsweeney&apos;s marfa nulla single-origin coffee squid. 
 													Exercitation +1 labore velit, blog sartorial PBR leggings next level wes anderson artisan 
 													four loko farm-to-table craft beer twee. Qui photo booth letterpress, commodo enim craft 
 													beer mlkshk aliquip jean shorts ullamco ad vinyl cillum PBR. Homo nostrud organic, assumenda 
@@ -160,7 +160,7 @@ function UiTabsAccordions() {
 													craft beer, iphone skateboard locavore carles etsy salvia banksy hoodie helvetica. DIY synth 
 													PBR banksy irony. Leggings gentrify squid 8-bit cred pitchfork. Williamsburg banh mi whatever 
 													gluten-free, carles pitchfork biodiesel fixie etsy retro mlkshk vice blog. Scenester cred you 
-													probably haven't heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu 
+													probably haven&apos;t heard of them, vinyl craft beer blog stumptown. Pitchfork sustainable tofu 
 													synth chambray yr.
 												</p>
 											</div>
@@ -199,7 +199,7 @@ function UiTabsAccordions() {
 													<div className="tab-content p-4">
 														<div className="tab-pane fade show active" id="homeWithCard">
 															<p>
-																Raw denim you probably haven't heard of them jean shorts Austin. 
+																Raw denim you probably haven&apos;t heard of them jean shorts Austin. 
 																Nesciunt tofu stumptown aliqua, retro synth master cleanse. 
 																Mustache cliche tempor, williamsburg carles vegan helvetica. 
 																Reprehenderit butcher retro keffiyeh dreamcatcher synth. 
@@ -232,7 +232,7 @@ function UiTabsAccordions() {
 													<div className="tab-content p-4">
 														<div className="tab-pane fade show active" id="homev2WithCard">
 															<p>
-																Raw denim you probably haven't heard of them jean shorts Austin. 
+																Raw denim you probably haven&apos;t heard of them jean shorts Austin. 
 																Nesciunt tofu stumptown aliqua, retro synth master cleanse. 
 																Mustache cliche tempor, williamsburg carles vegan helvetica. 
 																Reprehenderit butcher retro keffiyeh dreamcatcher synth. 
@@ -316,7 +316,7 @@ function UiTabsAccordions() {
 												</h2>
 												<div id="collapseOne" className="accordion-collapse collapse show" data-bs-parent="#accordionExample">
 													<div className="accordion-body">
-														<strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+														<strong>This is the first item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It&apos;s also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
 													</div>
 												</div>
 											</div>
@@ -328,7 +328,7 @@ function UiTabsAccordions() {
 												</h2>
 												<div id="collapseTwo" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
 													<div className="accordion-body">
-														<strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+														<strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It&apos;s also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
 													</div>
 												</div>
 											</div>
@@ -340,7 +340,7 @@ function UiTabsAccordions() {
 												</h2>
 												<div id="collapseThree" className="accordion-collapse collapse" data-bs-parent="#accordionExample">
 													<div className="accordion-body">
-														<strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
+														<strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It&apos;s also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
 													</div>
 												</div>
 											</div>

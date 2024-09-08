@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  }, 
+  "rules": {
+    "react/react-in-jsx-scope": "off", // import react from 'react' 필요 여부 옵션
+    "react/no-unescaped-entities": "off" // JSX 내에서 특수문자를 사용할 수 있는지 여부 옵션
+  }
+}

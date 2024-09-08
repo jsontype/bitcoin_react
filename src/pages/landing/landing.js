@@ -676,7 +676,7 @@ function Landing() {
 											<Icon icon="ic:baseline-star" className="fs-18px" />
 										</div>
 										This template is a game-changer. 
-										It's intuitive, flexible, and the seamless integration 
+										It&apos;s intuitive, flexible, and the seamless integration 
 										has made our projects run smoother than ever.
 									</div>
 									<div className="d-flex align-items-end">

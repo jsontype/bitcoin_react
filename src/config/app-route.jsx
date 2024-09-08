@@ -3,7 +3,8 @@ import App from './../app.jsx';
 import { Navigate } from 'react-router-dom';
 
 import Dashboard from './../pages/dashboard/dashboard.js';
-import Analytics from './../pages/analytics/analytics.js';
+import Bitcoin from './../pages/bitcoin/bitcoin.js';
+import Ethereum from './../pages/ethereum/ethereum.js';
 import EmailInbox from './../pages/email/inbox.js';
 import EmailCompose from './../pages/email/compose.js';
 import EmailDetail from './../pages/email/detail.js';
@@ -63,9 +64,10 @@ const AppRoute = [
     path: '*', 
     element: <App />,
     children: [
-    	{ path: '', element: <Navigate to='/dashboard' /> },
+    	{ path: '', element: <Navigate to='/bitcoin' /> },
     	{ path: 'dashboard', element: <Dashboard /> },
-    	{ path: 'analytics', element: <Analytics /> },
+    	{ path: 'bitcoin', element: <Bitcoin /> },
+    	{ path: 'ethereum', element: <Ethereum /> },
     	{ path: 'email/*', 
     		children: [
 					{ path: 'inbox', element: <EmailInbox /> },
@@ -155,6 +157,5 @@ const AppRoute = [
 		]
   }
 ];
-
 
 export default AppRoute;

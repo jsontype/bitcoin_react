@@ -1,14 +1,15 @@
 const Menu = [
 	{ is_header: true, title: 'Navigation' },
+	{ path: '/bitcoin', icon: 'bi bi-currency-bitcoin', title: 'Bitcoin' },
+	{ path: '/ethereum', icon: 'bi bi-coin', title: 'Ethereum' },
 	{ path: '/dashboard', icon: 'bi bi-cpu', title: 'Dashboard' },
-	{ path: '/analytics', icon: 'bi bi-bar-chart', title: 'Analytics' },
-	{ path: '/email', icon: 'bi bi-envelope', title: 'Email',
+	{ path: '/email', icon: 'bi bi-coin', title: 'Email',
 		children: [
 			{ path: '/email/inbox', title: 'Inbox' }, 
 			{ path: '/email/compose', title: 'Compose' }, 
 			{ path: '/email/detail', title: 'Detail' }
 		]
-	}, 
+	},	
 	{ is_divider: true }, 
 	{ is_header: true, title: 'Components' }, 
 	{ path: '/widgets', icon: 'bi bi-columns-gap', title: 'Widgets' }, 

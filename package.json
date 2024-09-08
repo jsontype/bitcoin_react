@@ -70,7 +70,11 @@
     "start": "react-scripts start",
     "build": "react-scripts --max_old_space_size=4096 build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "eslint": "eslint ./src",
+    "eslint:fix": "eslint --fix ./src",
+    "lint": "npm run format && npm run eslint",
+    "lint:fix": "npm run format:fix && npm run eslint:fix"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -86,5 +90,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0"
   }
 }

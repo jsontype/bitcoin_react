@@ -10,7 +10,7 @@ function PosKitchenOrder() {
 	const [orderData, setOrderData] = useState();
 	
 	function checkTime(i) {
-		if (i < 10) {i = "0" + i};
+		if (i < 10) {i = "0" + i}
 		return i;
 	}
 	
