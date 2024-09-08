@@ -9,7 +9,7 @@ function PosMenuStock() {
 	const [stockData, setStockData] = useState();
 	
 	function checkTime(i) {
-		if (i < 10) {i = "0" + i};
+		if (i < 10) {i = "0" + i}
 		return i;
 	}
 	
@@ -78,7 +78,7 @@ function PosMenuStock() {
 				<div className="pos-content">
 					<div className="pos-content-container h-100 p-3" data-scrollbar="true" data-height="100%">
 						<div className="row gx-3">
-							{stockData && stockData.length > 0 ? (stockData.map((stock, index) => (
+							{stockData && stockData.length > 0 ? (stockData.map((stock) => (
 							<div className="col-xl-2 col-lg-3 col-md-4 col-sm-6 pb-3" key={stock.id}>
 								<Card className="h-100">
 									<CardBody className="h-100 p-1">

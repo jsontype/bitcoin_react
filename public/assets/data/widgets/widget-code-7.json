@@ -8,7 +8,7 @@
           <div className="widget-chat-content">
             <div className="widget-chat-name">Roberto Lambert</div>
             <div className="widget-chat-message last">
-              Hey, I'm testing out group messaging.
+              Hey, I&apos;m testing out group messaging.
             </div>
           </div>
         </div>

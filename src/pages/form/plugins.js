@@ -72,10 +72,10 @@ function FormPlugins() {
 	
 	function handleChromeChangeComplete(color) {
 		setChromeBackgroundColor(color.hex);
-	};
+	}
 	
 	function setValue(value) {
-	};
+	}
 	
 	function handleDateApplyEvent(event, picker) {
 		var startDate = picker.startDate;

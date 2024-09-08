@@ -414,7 +414,7 @@ function Widgets() {
 																	<div className="widget-chat-content">
 																		<div className="widget-chat-name">Roberto Lambert</div>
 																		<div className="widget-chat-message last">
-																			Hey, I'm testing out group messaging.
+																			Hey, I&apos;m testing out group messaging.
 																		</div>
 																	</div>
 																</div>
@@ -432,7 +432,7 @@ function Widgets() {
 																	<div className="widget-chat-content">
 																		<div className="widget-chat-name">Rick Powell</div>
 																		<div className="widget-chat-message last">
-																			Awesome! What's new?
+																			Awesome! What&apos;s new?
 																		</div>
 																	</div>
 																</div>
@@ -441,10 +441,10 @@ function Widgets() {
 																	<div className="widget-chat-content">
 																		<div className="widget-chat-name">Roberto Lambert</div>
 																		<div className="widget-chat-message">
-																			Not much, It's got a new look, contact pics show up in group messaging, some other small stuff.
+																			Not much, It&apos;s got a new look, contact pics show up in group messaging, some other small stuff.
 																		</div>
 																		<div className="widget-chat-message last">
-																			How's crusty old iOS 6 treating you?
+																			How&apos;s crusty old iOS 6 treating you?
 																		</div>
 																	</div>
 																</div>
@@ -630,7 +630,7 @@ function Widgets() {
 															<div className="widget-reminder-divider bg-primary"></div>
 															<div className="widget-reminder-content">
 																<div className="fw-bold">Dinner with Richard</div>
-																<div className="fs-13px"> - Tom's Too Restaurant</div>
+																<div className="fs-13px"> - Tom&apos;s Too Restaurant</div>
 																<div className="d-flex align-items-center fs-13px mt-2">
 																	<div className="flex-fill d-flex align-items-center">
 																		<img src="/assets/img/user/user-3.jpg" alt="" width="16" className="rounded-circle me-2" /> Richard Leong

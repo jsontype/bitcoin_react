@@ -9,7 +9,7 @@ function Dashboard() {
 	
 	function randomNo() {
 		return Math.floor(Math.random() * 60) + 30
-	};
+	}
 	
 	// server chart
 	var serverChartData = [
@@ -383,6 +383,6 @@ function Dashboard() {
 			</div>
 		</div>
 	)
-};
+}
 
 export default Dashboard;
