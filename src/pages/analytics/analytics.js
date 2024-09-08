@@ -10,7 +10,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 
 function Analytics() {
 	const [prices, setPrices] = useState({ bitcoin: null, ethereum: null });
-	const [history, setHistory] = useState(null);
+	const [dailyHistory, setDailyHistory] = useState(null);
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -29,7 +29,7 @@ function Analytics() {
   
     fetchPrices();
 
-		const fetchHistory = async (cryptoId, days) => {
+		const fetchDailyHistory = async (cryptoId, days) => {
 			const apiUrl = `https://api.coingecko.com/api/v3/coins/${cryptoId}/market_chart?vs_currency=usd&days=${days}`;
 			try {
 				const response = await fetch(apiUrl);
@@ -39,7 +39,7 @@ function Analytics() {
 				const data = await response.json();
 	
 				if (data.prices && data.prices.length > 0) {
-					setHistory(data.prices);
+					setDailyHistory(data.prices);
 				} else {
 					alert(`No data available for ${cryptoId} for the selected period.`);
 				}
@@ -50,7 +50,7 @@ function Analytics() {
 		};
 
 		// ***! 1. history fetch -> history data (graph data)
-		fetchHistory('bitcoin', 1);
+		fetchDailyHistory('bitcoin', 1);
   }, []);  
 
 	var chart1 = '';
@@ -125,7 +125,7 @@ function Analytics() {
 			chart1.destroy();
 		}
 
-		// ***! 1.
+		// ***! 1. Daily History
 		// console.log('prices:', prices.bitcoin);
 		// console.log('history datetime:', new Date(history[0][0]).toLocaleTimeString('en-US', {
 		// 	hour: 'numeric',
@@ -135,12 +135,19 @@ function Analytics() {
 
 		const labels = ['12am', '4am', '8am', '12pm', '4pm', '8pm']
 
-		if (chart1Container) {
+		if (chart1Container && dailyHistory) {
+			// history 배열에서 비트코인 가격을 추출한 배열 생성
+			const bitcoinPricesFromHistory = dailyHistory.map(([_, bitcoinPrice]) => bitcoinPrice);
+	
+			// 최소값과 최대값을 history에서 계산하고, +-1000의 여유를 줌
+			const minPrice = Math.min(...bitcoinPricesFromHistory) - 1000;
+			const maxPrice = Math.max(...bitcoinPricesFromHistory) + 1000;
+	
 			// Bitcoin 가격 데이터를 저장할 배열
 			const bitcoinPrices = new Array(labels.length).fill(0); // 처음엔 0으로 채워놓습니다.
 			
 			// history 배열을 탐색하여 labels에 맞는 시간을 찾아 bitcoinPrices에 업데이트
-			history.forEach(([unixTime, bitcoinPrice]) => {
+			dailyHistory.forEach(([unixTime, bitcoinPrice]) => {
 					const timeString = new Date(unixTime).toLocaleTimeString('en-US', {
 							hour: 'numeric',
 							hour12: true
@@ -171,7 +178,6 @@ function Analytics() {
 									pointHoverBorderColor: themeColor,
 									pointHoverRadius: 6,
 									pointHoverBorderWidth: 2,
-									// todayPrices에 해당하는 부분을 업데이트된 bitcoinPrices로 대체
 									data: bitcoinPrices
 							},{
 									color: gray300Color,
@@ -185,13 +191,26 @@ function Analytics() {
 									pointHoverBorderColor: gray300Color,
 									pointHoverRadius: 6,
 									pointHoverBorderWidth: 2,
-									// 기존 데이터는 그대로 유지
 									data: [100, 100, 100, 500, 120, 100]
 							}]
+					},
+					options: {
+							scales: {
+									y: {
+											min: minPrice,  // 최소값 - 2000
+											max: maxPrice,  // 최대값 + 2000
+											ticks: {
+													stepSize: 1000, // 각 눈금 간격을 1000 단위로 설정
+													callback: function(value) {
+															return value.toFixed(0); // 소숫점을 제거하여 정수로 표시
+													}
+											}
+									}
+							}
 					}
 			});
 		}
-		
+	
 		// #chart2
 		var chart2Container = document.getElementById('chart-2');
 		if (chart2) {
@@ -392,7 +411,7 @@ function Analytics() {
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fw-bold fs-16px">Bitcoin</div>
+								<div className="flex-fill fw-bold fs-16px">Bitcoin Daily Prices</div>
 								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
 							</div>
 			
@@ -422,12 +441,12 @@ function Analytics() {
 					<Card>
 						<CardBody>
 							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fw-bold fs-16px">Online store sessions</div>
+								<div className="flex-fill fw-bold fs-16px">Bitcoin Weekly Prices</div>
 								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
 							</div>
 			
 							<div className="d-flex align-items-center h3 mb-3">
-								<div>39</div>
+								<div>{prices.bitcoin ? `${prices.bitcoin} USD` : 'Loading...'}</div>
 								<small className="fw-400 ms-auto text-danger">-2.5%</small>
 							</div>
 						
@@ -500,134 +519,6 @@ function Analytics() {
 				<div className="col-lg-6 col-xl-4 mb-4">
 					<Card>
 						<CardBody>
-							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fs-16px fw-bold">Returning customer rate</div>
-							</div>
-			
-							<div className="d-flex align-items-center h3 mb-3">
-								<div>52.85%</div>
-								<small className="fw-400 ms-auto text-danger">-7%</small>
-							</div>
-						
-							<div>
-								<div className="fs-12px fw-bold mb-2 text-inverse text-opacity-50">CUSTOMERS</div>
-								<div className="chart mb-2" style={{height: '190px'}}>
-									<div id="chart-3"></div>
-								</div>
-								<div className="d-flex align-items-center justify-content-center text-inverse text-opacity-50 fw-bold">
-									<i className="fa fa-square text-indigo me-2"></i> 
-									<span className="fs-12px me-4">First-time</span>
-									<i className="fa fa-square text-theme me-2"></i> 
-									<span className="fs-12px">Returning</span>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			
-				<div className="col-lg-6 col-xl-4 mb-4">
-					<Card>
-						<CardBody>
-							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fw-bold fs-16px">Conversion rate</div>
-								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
-							</div>
-			
-							<div className="d-flex align-items-center h3 mb-3">
-								<div>5.29%</div>
-								<small className="fw-400 ms-auto text-theme">+83%</small>
-							</div>
-						
-							<div>
-								<div className="fs-12px fw-bold mb-2 text-inverse text-opacity-50">CONVERSION FUNNEL</div>
-								<div className="row mb-2">
-									<div className="col-6">
-										<div>Added to cart</div>
-										<div className="small text-inverse text-opacity-50">55 session</div>
-									</div>
-									<div className="col-3 text-center">25.28%</div>
-									<div className="col-3 text-center"><span className="text-danger">-</span> 5%</div>
-								</div>
-								<div className="row mb-2">
-									<div className="col-6">
-										<div>Reached checkout</div>
-										<div className="small text-inverse text-opacity-50">25 session</div>
-									</div>
-									<div className="col-3 text-center">15.28%</div>
-									<div className="col-3 text-center"><span className="text-theme">+</span> 82%</div>
-								</div>
-								<div className="row">
-									<div className="col-6">
-										<div>Sessions converted</div>
-										<div className="small text-inverse text-opacity-50">5 session</div>
-									</div>
-									<div className="col-3 text-center">5.28%</div>
-									<div className="col-3 text-center"><span className="text-theme">+</span> 82%</div>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			
-				<div className="col-lg-6 col-xl-4 mb-4">
-					<Card>
-						<CardBody>
-							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fw-bold fs-16px">Average order value</div>
-							</div>
-			
-							<div className="d-flex align-items-center h3 mb-3">
-								<div>$35.12</div>
-								<small className="fw-400 ms-auto text-danger">-3.2%</small>
-							</div>
-						
-							<div>
-								<div className="fs-12px fw-bold mb-2 text-inverse text-opacity-50">ORDERS BY TIME</div>
-								<div className="chart mb-2" style={{height: '190px'}}>
-									<div id="chart-4"></div>
-								</div>
-								<div className="d-flex align-items-center justify-content-center fw-bold text-inverse text-opacity-50">
-									<i className="fa fa-square text-gray-300 me-2"></i> 
-									<span className="fs-12px me-4">{prevDate}</span>
-									<i className="fa fa-square text-theme me-2"></i> 
-									<span className="fs-12px me-4">{todayDate}</span>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			
-				<div className="col-lg-6 col-xl-4 mb-4">
-					<Card>
-						<CardBody>
-							<div className="d-flex align-items-center mb-2">
-								<div className="flex-fill fw-bold fs-16px">Total orders</div>
-							</div>
-			
-							<div className="d-flex align-items-center h3 mb-3">
-								<div>12</div>
-								<small className="fw-400 ms-auto text-theme">+57%</small>
-							</div>
-						
-							<div>
-								<div className="fs-12px fw-bold mb-2 text-inverse text-opacity-50">ORDERS OVER TIME</div>
-								<div className="chart mb-2">
-									<div id="chart-5"></div>
-								</div>
-								<div className="d-flex align-items-center justify-content-center fw-bold text-inverse text-opacity-50">
-									<i className="fa fa-square text-gray-300 me-2"></i> 
-									<span className="fs-12px me-4">{prevDate}</span>
-									<i className="fa fa-square text-theme me-2"></i> 
-									<span className="fs-12px me-4">{todayDate}</span>
-								</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			
-				<div className="col-lg-6 col-xl-4 mb-4">
-					<Card>
-						<CardBody>
 							<div className="d-flex align-items-center mb-3">
 								<div className="flex-fill fw-bold fs-16px">Top pages by sessions</div>
 							</div>
@@ -651,85 +542,6 @@ function Analytics() {
 					</Card>
 				</div>
 			
-				<div className="col-lg-6 col-xl-4 mb-4">
-					<Card>
-						<CardBody>
-							<div className="d-flex align-items-center mb-3">
-								<div className="flex-fill fw-bold fs-16px">Sessions by device type</div>
-								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
-							</div>
-			
-							<div className="row mb-2">
-								<div className="col-6">
-									<div>Desktop</div>
-								</div>
-								<div className="col-3 text-center">247</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 4.2%</div>
-							</div>
-							<div className="row mb-2">
-								<div className="col-6">
-									<div>Mobile</div>
-								</div>
-								<div className="col-3 text-center">198</div>
-								<div className="col-3 text-center"><span className="text-danger">-</span> 2.2%</div>
-							</div>
-							<div className="row">
-								<div className="col-6">
-									<div>Tablet</div>
-								</div>
-								<div className="col-3 text-center">35</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 8.9%</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
-			
-				<div className="col-lg-6 col-xl-4 mb-4">
-					<Card>
-						<CardBody>
-							<div className="d-flex align-items-center mb-3">
-								<div className="flex-fill fw-600 fs-16px">Visits from social sources</div>
-								<a href="#/" className="text-decoration-none text-inverse text-opacity-50">View report</a>
-							</div>
-			
-							<div className="row mb-2">
-								<div className="col-6">
-									<div>Facebook</div>
-								</div>
-								<div className="col-3 text-center">247</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 4.2%</div>
-							</div>
-							<div className="row mb-2">
-								<div className="col-6">
-									<div>Twitter</div>
-								</div>
-								<div className="col-3 text-center">153</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 8.2%</div>
-							</div>
-							<div className="row mb-2">
-								<div className="col-6">
-									<div>Instagram</div>
-								</div>
-								<div className="col-3 text-center">98</div>
-								<div className="col-3 text-center"><span className="text-danger">-</span> 3.4%</div>
-							</div>
-							<div className="row mb-2">
-								<div className="col-6">
-									<div>Pinterest</div>
-								</div>
-								<div className="col-3 text-center">75</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 1.9%</div>
-							</div>
-							<div className="row">
-								<div className="col-6">
-									<div>Dribbble</div>
-								</div>
-								<div className="col-3 text-center">22</div>
-								<div className="col-3 text-center"><span className="text-theme">+</span> 2.1%</div>
-							</div>
-						</CardBody>
-					</Card>
-				</div>
 			</div>
 		</div>
 	)
